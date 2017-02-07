@@ -4,50 +4,71 @@
  * @flow
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
+    AppRegistry,
+    StyleSheet,
+    Text,
+    View,
+    TouchableOpacity,
+    NavigatorIOS
 } from 'react-native';
 
+var QRCodeScreen = require('./QRCodeScreen');
+
 export default class qrcodeReader extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
-  }
+    render() {
+        return (<NavigatorIOS style={styles.container} initialRoute={{
+            title: 'Index',
+            backButtonTitle: 'Back',
+            component: Index
+        }}/>);
+    }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+var Index = React.createClass({
+
+    getInitialState() {
+        return {data: ""};
+    },
+
+    render: function() {
+        return (
+            <View style={styles.contentContainer}>
+                <TouchableOpacity onPress={this._onPressQRCode}>
+                    <Text>Read QRCode</Text>
+                </TouchableOpacity>
+                <Text>{this.state.data}</Text>
+            </View>
+        );
+    },
+
+    _onPressQRCode: function() {
+        this.props.navigator.push({
+            component: QRCodeScreen,
+            title: 'QRCode',
+            passProps: {
+                onSucess: this._onSucess
+            }
+        });
+    },
+
+    _onSucess: function(result) {
+        console.log(result);
+        this.setState({data: result});
+    }
+});
+
+var styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#F5FCFF'
+    },
+    contentContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center'
+    }
 });
 
 AppRegistry.registerComponent('qrcodeReader', () => qrcodeReader);
